@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: librarian
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+
+  library:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+
+
+  tests:
+    image: gradle:jdk17
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["gradle", "test", "--no-daemon"]
+    depends_on:
+      - postgres
